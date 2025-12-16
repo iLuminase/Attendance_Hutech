@@ -1,12 +1,16 @@
 import sys
 from pathlib import Path
-from fastapi import FastAPI
-from routers import student_router, class_router
-from services.database_service import db_service
-import logging
+import os
 
 # Thêm parent directory vào sys.path để import routers và services
-sys.path.insert(0, str(Path(__file__).parent.parent))
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir)
+
+from fastapi import FastAPI
+from routers import student_router, class_router, session_router
+from services.database_service import db_service
+import logging
 
 
 # Setup logging
@@ -53,3 +57,4 @@ async def health_check():
 # Include routers
 app.include_router(student_router.router)
 app.include_router(class_router.router)
+app.include_router(session_router.router)

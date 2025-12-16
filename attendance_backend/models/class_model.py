@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String
+from sqlalchemy.orm import relationship
 from app.database import Base
 
 class Class(Base):
@@ -8,3 +9,6 @@ class Class(Base):
     class_name = Column(String(100))
     subject_name = Column(String(100))
     lecturer_name = Column(String(100))
+    
+    # Relationship
+    sessions = relationship("Session", back_populates="class_info")
