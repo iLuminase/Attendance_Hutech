@@ -448,3 +448,62 @@ def detect_faces_in_image(image_bytes: bytes) -> Tuple[List[Dict], np.ndarray]:
     except Exception as e:
         print(f"Error in detect_faces_in_image: {e}")
         return [], None
+
+def create_face_thumbnail(image_bytes: bytes, size: Tuple[int, int] = (150, 150)) -> Optional[bytes]:
+    """Tạo thumbnail từ ảnh khuôn mặt"""
+    if face_service is None:
+        return None
+
+    try:
+        # Detect face first
+        img = face_service.preprocess_image(image_bytes)
+        if img is None:
+            return None
+
+        faces = face_service.detect_faces(img)
+        if not faces:
+            # No face detected, create thumbnail from center
+            height, width = img.shape[:2]
+            if width > height:
+                # Landscape - crop center square
+                start = (width - height) // 2
+                img_cropped = img[:, start:start + height]
+            else:
+                # Portrait - crop center square
+                start = (height - width) // 2
+                img_cropped = img[start:start + width, :]
+        else:
+            # Face detected, crop around face
+            face = faces[0]
+            x, y, w, h = face['x'], face['y'], face['w'], face['h']
+
+            # Add some padding around face
+            padding = int(max(w, h) * 0.3)
+            x1 = max(0, x - padding)
+            y1 = max(0, y - padding)
+            x2 = min(img.shape[1], x + w + padding)
+            y2 = min(img.shape[0], y + h + padding)
+
+            img_cropped = img[y1:y2, x1:x2]
+
+        # Resize to thumbnail size
+        thumbnail = cv2.resize(img_cropped, size)
+
+        # Encode back to bytes
+        _, buffer = cv2.imencode('.jpg', thumbnail, [cv2.IMWRITE_JPEG_QUALITY, 85])
+        return buffer.tobytes()
+
+    except Exception as e:
+        print(f"Error creating thumbnail: {e}")
+        return None
+
+def validate_image_format(image_bytes: bytes) -> bool:
+    """Kiểm tra format ảnh có hợp lệ không"""
+    try:
+        # Try to decode image
+        np_img = np.frombuffer(image_bytes, np.uint8)
+        img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
+        return img is not None
+    except:
+        return False
+

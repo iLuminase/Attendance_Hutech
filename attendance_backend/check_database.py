@@ -67,7 +67,18 @@ def verify_schema(engine):
         # Kiểm tra bảng students
         if 'students' in inspector.get_table_names():
             columns = [col['name'] for col in inspector.get_columns('students')]
-            required_columns = ['id', 'student_id', 'name', 'email', 'phone', 'class_id', 'face_encoding', 'face_encoding_version', 'created_at', 'updated_at']
+            required_columns = [
+                'student_id',
+                'name',
+                'email',
+                'phone',
+                'class_id',
+                'face_encoding',
+                'face_image',
+                'face_encoding_version',
+                'created_at',
+                'updated_at',
+            ]
             
             missing_columns = [col for col in required_columns if col not in columns]
             if missing_columns:
@@ -77,7 +88,7 @@ def verify_schema(engine):
                 logger.info("✅ Students table schema is correct")
         
         # Kiểm tra các bảng khác
-        required_tables = ['classes', 'sessions', 'attendance']
+        required_tables = ['classes', 'sessions', 'session_classes', 'attendance']
         existing_tables = inspector.get_table_names()
         
         for table in required_tables:
@@ -105,7 +116,7 @@ def test_student_operations(engine):
             name="Test Student",
             email="test@test.com",
             phone="1234567890",
-            class_id=1
+            class_id="20DTHE4"
         )
         
         # Kiểm tra có student nào trùng không

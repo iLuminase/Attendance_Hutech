@@ -28,32 +28,32 @@ def migrate_database():
             
             # Migration steps
             migrations = []
-            
-            # 1. Add id column as primary key if not exists
-            if 'id' not in current_columns:
-                migrations.append("ALTER TABLE students ADD COLUMN id INT AUTO_INCREMENT PRIMARY KEY FIRST")
-            
-            # 2. Rename full_name to name if needed
+
+            # 1. Rename full_name to name if needed
             if 'full_name' in current_columns and 'name' not in current_columns:
                 migrations.append("ALTER TABLE students CHANGE full_name name VARCHAR(100) NOT NULL")
             
-            # 3. Add email column
+            # 2. Add email column
             if 'email' not in current_columns:
                 migrations.append("ALTER TABLE students ADD COLUMN email VARCHAR(100) UNIQUE AFTER name")
             
-            # 4. Add phone column  
+            # 3. Add phone column
             if 'phone' not in current_columns:
                 migrations.append("ALTER TABLE students ADD COLUMN phone VARCHAR(15) AFTER email")
             
-            # 5. Change class_id to INT
-            if 'class_id' in current_columns and current_columns['class_id'] != 'int':
-                migrations.append("ALTER TABLE students MODIFY COLUMN class_id INT")
+            # 5. Change class_id to VARCHAR(20)
+            if 'class_id' in current_columns and 'varchar' not in str(current_columns['class_id']).lower():
+                migrations.append("ALTER TABLE students MODIFY COLUMN class_id VARCHAR(20)")
             
-            # 6. Add face_encoding_version
+            # 4. Add face_image
+            if 'face_image' not in current_columns:
+                migrations.append("ALTER TABLE students ADD COLUMN face_image LONGBLOB AFTER face_encoding")
+
+            # 5. Add face_encoding_version
             if 'face_encoding_version' not in current_columns:
                 migrations.append("ALTER TABLE students ADD COLUMN face_encoding_version VARCHAR(10) DEFAULT '1.0' AFTER face_encoding")
             
-            # 7. Add updated_at
+            # 6. Add updated_at
             if 'updated_at' not in current_columns:
                 migrations.append("ALTER TABLE students ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP AFTER created_at")
             
@@ -94,7 +94,7 @@ def migrate_database():
             logger.info(f"Final students table columns: {final_columns}")
             
             # Check if all required columns exist
-            required_columns = ['id', 'student_id', 'name', 'email', 'phone', 'class_id', 'face_encoding', 'face_encoding_version', 'created_at', 'updated_at']
+            required_columns = ['student_id', 'name', 'email', 'phone', 'class_id', 'face_encoding', 'face_image', 'face_encoding_version', 'created_at', 'updated_at']
             missing = [col for col in required_columns if col not in final_columns]
             
             if missing:

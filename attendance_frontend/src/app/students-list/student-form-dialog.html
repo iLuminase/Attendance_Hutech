@@ -1,0 +1,97 @@
+<h2 mat-dialog-title>
+  {{ data.isEdit ? 'Chỉnh sửa thông tin sinh viên' : 'Thêm sinh viên mới' }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="studentForm" class="student-form">
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Mã sinh viên</mat-label>
+        <input matInput formControlName="student_id" placeholder="Nhập mã sinh viên" />
+        <mat-error *ngIf="studentForm.get('student_id')?.hasError('required')">
+          Mã sinh viên không được để trống
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Họ và tên</mat-label>
+        <input matInput formControlName="name" placeholder="Nhập họ và tên" />
+        <mat-error *ngIf="studentForm.get('name')?.hasError('required')">
+          Họ và tên không được để trống
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="Nhập email" />
+        <mat-error *ngIf="studentForm.get('email')?.hasError('required')">
+          Email không được để trống
+        </mat-error>
+        <mat-error *ngIf="studentForm.get('email')?.hasError('email')">
+          Email không đúng định dạng
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Số điện thoại</mat-label>
+        <input matInput formControlName="phone" placeholder="Nhập số điện thoại" />
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Lớp</mat-label>
+        <mat-select formControlName="class_id">
+          <mat-option *ngFor="let c of data.classes || []" [value]="c.class_id">
+            {{ c.class_name || c.class_id }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="studentForm.get('class_id')?.hasError('required')">
+          ID lớp không được để trống
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="isSubmitting">Hủy</button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onSubmit()"
+    [disabled]="!studentForm.valid || isSubmitting"
+  >
+    <mat-icon *ngIf="isSubmitting">hourglass_empty</mat-icon>
+    {{ data.isEdit ? 'Cập nhật' : 'Thêm mới' }}
+  </button>
+</mat-dialog-actions>
+
+<style>
+  .student-form {
+    min-width: 500px;
+    padding: 20px 0;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  .half-width {
+    width: calc(50% - 8px);
+  }
+
+  .mat-mdc-dialog-content {
+    padding: 0 24px !important;
+  }
+</style>

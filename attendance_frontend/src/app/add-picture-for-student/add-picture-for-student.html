@@ -1,0 +1,75 @@
+<div class="enroll-container">
+  <mat-card>
+    <mat-card-content>
+      <div class="header">
+        <div class="title">
+          <mat-icon aria-hidden="true">add_a_photo</mat-icon>
+          <div>
+            <div class="heading">Đăng ký khuôn mặt cho sinh viên</div>
+            <div class="sub">Tải 1 ảnh rõ mặt để hệ thống lưu encoding phục vụ nhận diện.</div>
+          </div>
+        </div>
+
+        <button mat-stroked-button (click)="loadStudents()" [disabled]="isLoadingStudents">
+          <mat-icon>refresh</mat-icon>
+          Tải lại danh sách
+        </button>
+      </div>
+
+      <div class="form">
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>Sinh viên</mat-label>
+          <mat-select [(value)]="selectedStudentId" (selectionChange)="onStudentChange()">
+            <mat-option [value]="null">-- Chọn sinh viên --</mat-option>
+            <mat-option *ngFor="let s of students" [value]="s.student_id">
+              {{ s.student_id }} - {{ s.name }} (Lớp {{ getClassName(s.class_id) }})
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="status" *ngIf="selectedStudentId">
+          <div class="status-item">
+            <mat-icon>image</mat-icon>
+            <span>Ảnh:</span>
+            <b>{{ hasFaceImage === null ? '...' : hasFaceImage ? 'Đã có' : 'Chưa có' }}</b>
+          </div>
+          <div class="status-item">
+            <mat-icon>psychology</mat-icon>
+            <span>Encoding:</span>
+            <b>{{ hasFaceEncoding === null ? '...' : hasFaceEncoding ? 'Đã có' : 'Chưa có' }}</b>
+          </div>
+        </div>
+      </div>
+
+      <div class="upload-row">
+        <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
+
+        <button mat-stroked-button (click)="fileInput.click()" [disabled]="isUploading">
+          <mat-icon>upload</mat-icon>
+          Chọn ảnh
+        </button>
+
+        <button mat-raised-button color="primary" (click)="upload()" [disabled]="isUploading">
+          <mat-icon>save</mat-icon>
+          <span *ngIf="!isUploading">Lưu khuôn mặt</span>
+          <mat-spinner *ngIf="isUploading" diameter="18"></mat-spinner>
+        </button>
+
+        <button mat-button (click)="clear()" [disabled]="isUploading">
+          <mat-icon>close</mat-icon>
+          Xóa ảnh chọn
+        </button>
+      </div>
+
+      <div class="preview" *ngIf="previewUrl">
+        <div class="preview-title">
+          <mat-icon>visibility</mat-icon>
+          Xem trước
+        </div>
+        <img class="preview-img" [src]="previewUrl" alt="Preview" />
+      </div>
+
+      <div class="message" *ngIf="statusMessage">{{ statusMessage }}</div>
+    </mat-card-content>
+  </mat-card>
+</div>

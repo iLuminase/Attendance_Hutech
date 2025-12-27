@@ -1,2 +1,2 @@
-# Routers package
+"""Routers package."""
 

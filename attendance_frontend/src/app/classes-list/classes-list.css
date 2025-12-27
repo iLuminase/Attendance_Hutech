@@ -1,0 +1,54 @@
+.classes-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title mat-icon {
+  color: var(--mat-sys-primary);
+}
+
+.heading {
+  font: var(--mat-sys-headline-small);
+}
+
+.sub {
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-medium);
+}
+
+.loading {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.message {
+  margin-top: 12px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.table {
+  margin-top: 12px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+}

@@ -1,0 +1,138 @@
+<mat-card class="camera-page">
+  <mat-card-content>
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="page-title">
+          <mat-icon aria-hidden="true">camera_alt</mat-icon>
+          <div>
+            <div class="title">Bật camera điểm danh</div>
+            <div class="subtitle">
+              Trạng thái: <b>{{ getStatusText() }}</b>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <mat-form-field appearance="outline" class="session-field">
+          <mat-label>Buổi học (tuỳ chọn)</mat-label>
+          <mat-select [(value)]="selectedSessionId" (selectionChange)="onSessionChange()">
+            <mat-option [value]="null">Không chọn</mat-option>
+            <mat-option *ngFor="let s of getActiveSessions()" [value]="s.session_id">
+              #{{ s.session_id }} - {{ getClassName(s.class_id) }} ({{ s.session_date }}
+              {{ s.start_time }}-{{ s.end_time }})
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="session-field">
+          <mat-label>Lớp (tuỳ chọn)</mat-label>
+          <mat-select
+            multiple
+            [(value)]="selectedClassIds"
+            (selectionChange)="onClassSelectionChange()"
+            [disabled]="selectedSessionId !== null"
+          >
+            <mat-option *ngFor="let cid of getActiveClassIds()" [value]="cid">
+              {{ getClassName(cid) }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" (click)="startCamera()" [disabled]="isCameraOn">
+          <mat-icon>videocam</mat-icon>
+          Bật camera
+        </button>
+        <button mat-raised-button color="warn" (click)="stopCamera()" [disabled]="!isCameraOn">
+          <mat-icon>videocam_off</mat-icon>
+          Tắt
+        </button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <mat-icon>face</mat-icon>
+        <span>Khuôn mặt:</span>
+        <b>{{ facesCount }}</b>
+      </div>
+      <div class="stat">
+        <mat-icon>verified</mat-icon>
+        <span>Nhận diện:</span>
+        <b>{{ recognizedCount }}</b>
+      </div>
+      <div class="stat" *ngIf="lastRecognizeAt">
+        <mat-icon>schedule</mat-icon>
+        <span>Tick:</span>
+        <b>{{ lastRecognizeAt }}</b>
+      </div>
+    </div>
+
+    <div class="camera-layout">
+      <div class="camera-left">
+        <div class="camera-box">
+          <video #video autoplay playsinline class="camera-video"></video>
+          <canvas #overlay class="camera-overlay"></canvas>
+          <canvas #canvas class="camera-capture"></canvas>
+        </div>
+
+        <div class="message" *ngIf="message">
+          <mat-icon>info</mat-icon>
+          <span>{{ message }}</span>
+        </div>
+      </div>
+
+      <div class="camera-right">
+        <mat-card class="side-card">
+          <mat-card-content>
+            <div class="side-title">
+              <mat-icon>psychology</mat-icon>
+              Kết quả nhận diện
+            </div>
+            <div class="side-sub" *ngIf="!isCameraOn">Bật camera để bắt đầu nhận diện.</div>
+            <div class="side-sub" *ngIf="isCameraOn && !lastRecognized.length">
+              Chưa nhận diện được sinh viên nào.
+            </div>
+
+            <mat-list *ngIf="lastRecognized.length">
+              <mat-list-item *ngFor="let st of lastRecognized">
+                <div class="recognized-item">
+                  <div class="recognized-title">
+                    <b>{{ st.student_id }}</b> - {{ st.name }}
+                  </div>
+                  <div class="recognized-sub">
+                    <span *ngIf="st.class_id">Lớp {{ getClassName(st.class_id) }}</span>
+                    <span *ngIf="st.similarity !== undefined && st.similarity !== null"
+                      >• Độ khớp: {{ st.similarity | number : '1.2-2' }}</span
+                    >
+                  </div>
+                </div>
+              </mat-list-item>
+            </mat-list>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="side-card">
+          <mat-card-content>
+            <div class="side-title">
+              <mat-icon>how_to_reg</mat-icon>
+              Sinh viên đã điểm danh
+            </div>
+            <div class="side-sub" *ngIf="!checkedIn.length">Chưa có dữ liệu</div>
+
+            <mat-list *ngIf="checkedIn.length">
+              <mat-list-item *ngFor="let item of checkedIn">
+                <div class="checkedin-item">
+                  <div class="checkedin-title">
+                    <b>{{ item.student_id }}</b> - {{ item.student_name }}
+                  </div>
+                  <div class="checkedin-time">{{ formatAttendanceTime(item) }}</div>
+                </div>
+              </mat-list-item>
+            </mat-list>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

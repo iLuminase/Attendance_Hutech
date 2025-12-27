@@ -1,0 +1,82 @@
+<div class="home-container">
+  <mat-card class="hero-card">
+    <mat-card-content class="hero-content">
+      <div class="hero-title">
+        <mat-icon aria-hidden="true">face</mat-icon>
+        <div>
+          <div class="hero-heading">Demo: Điểm danh sinh viên bằng nhận diện khuôn mặt</div>
+          <div class="hero-sub">
+            HUTECH — Luồng demo gợi ý: đăng ký ảnh → bật camera → xem báo cáo.
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <button mat-raised-button color="primary" (click)="go('/add-photo')">
+          <mat-icon>add_a_photo</mat-icon>
+          Đăng ký ảnh khuôn mặt
+        </button>
+        <button mat-raised-button color="primary" (click)="go('/attendance')">
+          <mat-icon>camera_alt</mat-icon>
+          Bắt đầu điểm danh
+        </button>
+        <button mat-stroked-button (click)="go('/reports')">
+          <mat-icon>assessment</mat-icon>
+          Xem báo cáo
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="steps">
+    <mat-card class="step-card">
+      <mat-card-content>
+        <div class="step-row">
+          <mat-icon>looks_one</mat-icon>
+          <div>
+            <div class="step-title">Đăng ký ảnh cho sinh viên</div>
+            <div class="step-desc">Chọn MSSV và tải 1 ảnh rõ mặt.</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="step-card">
+      <mat-card-content>
+        <div class="step-row">
+          <mat-icon>looks_two</mat-icon>
+          <div>
+            <div class="step-title">Bật camera và nhận diện</div>
+            <div class="step-desc">Hệ thống tự nhận diện và ghi điểm danh.</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="step-card">
+      <mat-card-content>
+        <div class="step-row">
+          <mat-icon>looks_3</mat-icon>
+          <div>
+            <div class="step-title">Tra cứu báo cáo</div>
+            <div class="step-desc">Xem danh sách đã điểm danh theo ngày.</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="grid">
+    <mat-card class="feature-card" *ngFor="let it of items" (click)="go(it.route)">
+      <mat-card-content class="feature-content">
+        <div class="feature-icon">
+          <mat-icon aria-hidden="true">{{ it.icon }}</mat-icon>
+        </div>
+        <div class="feature-text">
+          <div class="feature-title">{{ it.title }}</div>
+          <div class="feature-desc">{{ it.description }}</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

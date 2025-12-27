@@ -61,6 +61,7 @@ async def recognize_faces_endpoint(
             return {
                 "success": True,
                 "faces_count": 0,
+                "faces": [],
                 "recognized_students": [],
                 "message": "No faces detected"
             }
@@ -117,6 +118,7 @@ async def recognize_faces_endpoint(
         return {
             "success": True,
             "faces_count": len(faces),
+            "faces": faces,
             "recognized_count": sum(1 for s in recognized_students if s is not None),
             "recognized_students": recognized_students,
             "message": f"Recognized {sum(1 for s in recognized_students if s is not None)} out of {len(faces)} faces"

@@ -1,0 +1,22 @@
+<div class="menu-container">
+  <div class="menu-header">
+    <h2 class="menu-title">Chức năng</h2>
+    <p class="menu-subtitle">Chọn chức năng để demo nhanh</p>
+  </div>
+
+  <div class="menu-grid">
+    <div class="menu-item" *ngFor="let item of menuItems" (click)="onMenuClick(item.route)">
+      <mat-card class="menu-card">
+        <mat-card-content class="card-content">
+          <div class="icon-container">
+            <mat-icon class="menu-icon">{{ item.icon }}</mat-icon>
+          </div>
+          <div class="menu-text">
+            <h3>{{ item.title }}</h3>
+            <div class="menu-desc">{{ item.description }}</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

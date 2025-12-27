@@ -1,0 +1,85 @@
+.settings-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title mat-icon {
+  color: var(--mat-sys-primary);
+}
+
+.heading {
+  font: var(--mat-sys-headline-small);
+}
+
+.sub {
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-medium);
+}
+
+.grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 12px;
+}
+
+.card {
+  background: var(--mat-sys-surface-container);
+}
+
+.card-title {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font: var(--mat-sys-title-medium);
+  margin-bottom: 8px;
+}
+
+.card-title mat-icon {
+  color: var(--mat-sys-primary);
+}
+
+.kv {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.kv span {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.kv b {
+  font: var(--mat-sys-body-medium);
+  word-break: break-word;
+}
+
+.step {
+  padding: 6px 0;
+  color: var(--mat-sys-on-surface);
+}
+
+.actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}

@@ -1,0 +1,58 @@
+<div class="classes-container">
+  <mat-card>
+    <mat-card-content>
+      <div class="header">
+        <div class="title">
+          <mat-icon aria-hidden="true">school</mat-icon>
+          <div>
+            <div class="heading">Danh sách lớp học</div>
+            <div class="sub">
+              Tổng: <b>{{ total }}</b>
+            </div>
+          </div>
+        </div>
+
+        <button mat-stroked-button (click)="load()" [disabled]="isLoading">
+          <mat-icon>refresh</mat-icon>
+          Tải lại
+        </button>
+      </div>
+
+      <div class="loading" *ngIf="isLoading">
+        <mat-spinner diameter="40"></mat-spinner>
+        <div>Đang tải dữ liệu...</div>
+      </div>
+
+      <div class="message" *ngIf="!isLoading && message">{{ message }}</div>
+
+      <div class="table" *ngIf="!isLoading && data.length">
+        <table mat-table [dataSource]="data" class="mat-elevation-z1">
+          <ng-container matColumnDef="class_id">
+            <th mat-header-cell *matHeaderCellDef>Mã lớp</th>
+            <td mat-cell *matCellDef="let row">
+              <b>{{ row.class_id }}</b>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="class_name">
+            <th mat-header-cell *matHeaderCellDef>Tên lớp</th>
+            <td mat-cell *matCellDef="let row">{{ row.class_name || '' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="subject_name">
+            <th mat-header-cell *matHeaderCellDef>Môn học</th>
+            <td mat-cell *matCellDef="let row">{{ row.subject_name || '' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="lecturer_name">
+            <th mat-header-cell *matHeaderCellDef>Giảng viên</th>
+            <td mat-cell *matCellDef="let row">{{ row.lecturer_name || '' }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

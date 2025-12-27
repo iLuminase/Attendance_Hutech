@@ -1,0 +1,95 @@
+<div class="settings-container">
+  <mat-card>
+    <mat-card-content>
+      <div class="header">
+        <div class="title">
+          <mat-icon aria-hidden="true">settings</mat-icon>
+          <div>
+            <div class="heading">Cài đặt (Demo)</div>
+            <div class="sub">Cấu hình URL backend để chạy trên Netlify/Azure.</div>
+          </div>
+        </div>
+      </div>
+
+      <mat-card class="card" style="margin-bottom: 12px">
+        <mat-card-content>
+          <div class="card-title">
+            <mat-icon>dns</mat-icon>
+            Backend URL
+          </div>
+          <mat-form-field appearance="outline" style="width: 100%">
+            <mat-label>Backend Base URL</mat-label>
+            <input matInput [(ngModel)]="backendBaseUrl" placeholder="http://<azure-vm-ip>:8000" />
+          </mat-form-field>
+          <div style="display: flex; gap: 8px; align-items: center">
+            <button mat-raised-button color="primary" (click)="saveBackendUrl()">
+              <mat-icon>save</mat-icon>
+              Lưu
+            </button>
+            <span *ngIf="savedMessage" style="opacity: 0.8">{{ savedMessage }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <div class="grid">
+        <mat-card class="card">
+          <mat-card-content>
+            <div class="card-title">
+              <mat-icon>link</mat-icon>
+              API endpoints
+            </div>
+            <div class="kv">
+              <span>Backend</span><b>{{ backendBaseUrl }}</b>
+            </div>
+            <div class="kv">
+              <span>Students</span><b>{{ apiStudents }}</b>
+            </div>
+            <div class="kv">
+              <span>Classes</span><b>{{ apiClasses }}</b>
+            </div>
+            <div class="kv">
+              <span>Sessions</span><b>{{ apiSessions }}</b>
+            </div>
+            <div class="kv">
+              <span>Face</span><b>{{ apiFace }}</b>
+            </div>
+            <div class="kv">
+              <span>Attendance</span><b>{{ apiAttendance }}</b>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="card">
+          <mat-card-content>
+            <div class="card-title">
+              <mat-icon>playlist_add_check</mat-icon>
+              Luồng demo gợi ý
+            </div>
+            <div class="step">
+              1) Vào <b>Đăng ký ảnh khuôn mặt</b> → chọn sinh viên → upload ảnh.
+            </div>
+            <div class="step">
+              2) Vào <b>Bật camera điểm danh</b> → bật camera → đưa mặt vào khung.
+            </div>
+            <div class="step">3) Vào <b>Báo cáo</b> → chọn ngày → tải báo cáo.</div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="actions">
+        <button mat-raised-button color="primary" (click)="go('/add-photo')">
+          <mat-icon>add_a_photo</mat-icon>
+          Đăng ký ảnh
+        </button>
+        <button mat-raised-button color="primary" (click)="go('/attendance')">
+          <mat-icon>camera_alt</mat-icon>
+          Điểm danh
+        </button>
+        <button mat-stroked-button (click)="go('/reports')">
+          <mat-icon>assessment</mat-icon>
+          Báo cáo
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

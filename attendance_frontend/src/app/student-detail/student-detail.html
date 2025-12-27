@@ -1,0 +1,256 @@
+<div class="student-detail-container">
+  <!-- Header Toolbar -->
+  <mat-toolbar class="detail-toolbar">
+    <button mat-icon-button (click)="goBack()" matTooltip="Quay lại">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+
+    <span class="toolbar-title">
+      <mat-icon>person</mat-icon>
+      Chi tiết sinh viên
+    </span>
+
+    <span class="toolbar-spacer"></span>
+
+    <!-- Action Buttons -->
+    <div class="toolbar-actions" *ngIf="!isLoading">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="toggleEdit()"
+        [disabled]="isSaving"
+        *ngIf="!isEditing"
+      >
+        <mat-icon>edit</mat-icon>
+        Chỉnh sửa
+      </button>
+
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="saveChanges()"
+        [disabled]="!hasUnsavedChanges || !studentForm.valid || isSaving"
+        *ngIf="isEditing"
+      >
+        <mat-icon>save</mat-icon>
+        <span *ngIf="!isSaving">Lưu</span>
+        <mat-spinner diameter="20" *ngIf="isSaving"></mat-spinner>
+      </button>
+
+      <button mat-stroked-button (click)="cancelEdit()" [disabled]="isSaving" *ngIf="isEditing">
+        <mat-icon>cancel</mat-icon>
+        Hủy
+      </button>
+    </div>
+  </mat-toolbar>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Đang tải thông tin sinh viên...</p>
+  </div>
+
+  <!-- Student Details -->
+  <div *ngIf="!isLoading && student" class="detail-content">
+    <div class="detail-layout">
+      <!-- Left Column - Avatar & Actions -->
+      <div class="left-column">
+        <mat-card class="avatar-card">
+          <mat-card-header>
+            <mat-card-title>Hình ảnh</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="avatar-section">
+              <div class="student-avatar-large">
+                <!-- TODO: Implement actual image display -->
+                <mat-icon class="default-avatar-large">account_circle</mat-icon>
+                <div class="avatar-overlay" *ngIf="isEditing">
+                  <button
+                    mat-fab
+                    color="primary"
+                    (click)="uploadImage()"
+                    matTooltip="Tải lên ảnh mới"
+                  >
+                    <mat-icon>add_a_photo</mat-icon>
+                  </button>
+                </div>
+              </div>
+              <p class="avatar-hint" *ngIf="isEditing">Click vào nút để tải lên ảnh mới</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Student Stats Card -->
+        <mat-card class="stats-card">
+          <mat-card-header>
+            <mat-card-title>Thống kê</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="stats-list">
+              <div class="stat-item">
+                <mat-icon>event</mat-icon>
+                <span class="stat-label">Ngày tạo:</span>
+                <span class="stat-value">{{ student.created_at | date : 'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="stat-item">
+                <mat-icon>update</mat-icon>
+                <span class="stat-label">Cập nhật:</span>
+                <span class="stat-value">{{ student.updated_at | date : 'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="stat-item">
+                <mat-icon>class</mat-icon>
+                <span class="stat-label">Lớp:</span>
+                <mat-chip>{{ getClassName(student.class_id) }}</mat-chip>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Right Column - Student Information -->
+      <div class="right-column">
+        <mat-card class="info-card">
+          <mat-card-header>
+            <mat-card-title>
+              Thông tin sinh viên
+              <mat-chip [color]="hasUnsavedChanges ? 'warn' : 'primary'" *ngIf="isEditing">
+                <mat-icon>{{ hasUnsavedChanges ? 'edit' : 'check' }}</mat-icon>
+                {{ hasUnsavedChanges ? 'Chưa lưu' : 'Đã lưu' }}
+              </mat-chip>
+            </mat-card-title>
+            <mat-card-subtitle *ngIf="!isEditing">
+              Click "Chỉnh sửa" để thay đổi thông tin
+            </mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <form [formGroup]="studentForm" class="student-form">
+              <!-- Student ID -->
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Mã sinh viên</mat-label>
+                <input
+                  matInput
+                  formControlName="student_id"
+                  [readonly]="!isEditing"
+                  [class.readonly-field]="!isEditing"
+                />
+                <mat-icon matSuffix>badge</mat-icon>
+                <mat-error *ngIf="studentForm.get('student_id')?.hasError('required')">
+                  Mã sinh viên không được để trống
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Name -->
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Họ và tên</mat-label>
+                <input
+                  matInput
+                  formControlName="name"
+                  [readonly]="!isEditing"
+                  [class.readonly-field]="!isEditing"
+                />
+                <mat-icon matSuffix>person</mat-icon>
+                <mat-error *ngIf="studentForm.get('name')?.hasError('required')">
+                  Họ tên không được để trống
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Email -->
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Email</mat-label>
+                <input
+                  matInput
+                  formControlName="email"
+                  [readonly]="!isEditing"
+                  [class.readonly-field]="!isEditing"
+                />
+                <mat-icon matSuffix>email</mat-icon>
+                <mat-error *ngIf="studentForm.get('email')?.hasError('required')">
+                  Email không được để trống
+                </mat-error>
+                <mat-error *ngIf="studentForm.get('email')?.hasError('email')">
+                  Email không hợp lệ
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Phone -->
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Số điện thoại</mat-label>
+                <input
+                  matInput
+                  formControlName="phone"
+                  [readonly]="!isEditing"
+                  [class.readonly-field]="!isEditing"
+                />
+                <mat-icon matSuffix>phone</mat-icon>
+              </mat-form-field>
+
+              <!-- Class -->
+              <mat-form-field appearance="outline" class="form-field" *ngIf="isEditing">
+                <mat-label>Lớp</mat-label>
+                <mat-select formControlName="class_id">
+                  <mat-option *ngFor="let c of classes" [value]="c.class_id">
+                    {{ c.class_name || c.class_id }}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matSuffix>class</mat-icon>
+                <mat-error *ngIf="studentForm.get('class_id')?.hasError('required')">
+                  Mã lớp không được để trống
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field" *ngIf="!isEditing">
+                <mat-label>Lớp</mat-label>
+                <input
+                  matInput
+                  [value]="getClassName(student.class_id)"
+                  readonly
+                  class="readonly-field"
+                />
+                <mat-icon matSuffix>class</mat-icon>
+              </mat-form-field>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Action History Card (Future Feature) -->
+        <mat-card class="history-card">
+          <mat-card-header>
+            <mat-card-title>Lịch sử hoạt động</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="history-item">
+              <mat-icon>person_add</mat-icon>
+              <div class="history-content">
+                <span class="history-action">Tạo tài khoản</span>
+                <span class="history-date">{{
+                  student.created_at | date : 'dd/MM/yyyy HH:mm'
+                }}</span>
+              </div>
+            </div>
+            <div class="history-item" *ngIf="student.updated_at !== student.created_at">
+              <mat-icon>edit</mat-icon>
+              <div class="history-content">
+                <span class="history-action">Cập nhật thông tin</span>
+                <span class="history-date">{{
+                  student.updated_at | date : 'dd/MM/yyyy HH:mm'
+                }}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!isLoading && !student" class="error-container">
+    <mat-icon class="error-icon">error_outline</mat-icon>
+    <h2>Không tìm thấy sinh viên</h2>
+    <p>Sinh viên với ID "{{ studentId }}" không tồn tại hoặc đã bị xóa.</p>
+    <button mat-raised-button color="primary" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Quay lại danh sách
+    </button>
+  </div>
+</div>

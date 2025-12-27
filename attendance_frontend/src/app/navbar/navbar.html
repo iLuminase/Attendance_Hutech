@@ -1,0 +1,34 @@
+<mat-toolbar class="navbar">
+  <div class="navbar-container">
+    <!-- Logo và tên ứng dụng -->
+    <div class="navbar-brand" (click)="navigateToHome()">
+      <img src="/logo1.png" alt="Logo 1" class="logo logo-1" />
+      <div class="brand-text">
+        <h1 class="app-name">HỆ THỐNG ĐIỂM DANH TỰ ĐỘNG</h1>
+      </div>
+    </div>
+    <!-- Thời gian hiện tại -->
+    <div class="navbar-time">
+      <mat-icon class="time-icon">access_time</mat-icon>
+      <span class="time-text">{{ currentTime$ | async }}</span>
+    </div>
+
+    <!-- Menu người dùng -->
+    <div class="navbar-menu">
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-menu-button">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+
+      <mat-menu #userMenu="matMenu" class="user-menu">
+        <button mat-menu-item (click)="openProfile()">
+          <mat-icon>person</mat-icon>
+          <span>Hồ sơ cá nhân</span>
+        </button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Đăng xuất</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+</mat-toolbar>
