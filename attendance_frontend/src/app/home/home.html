@@ -27,45 +27,6 @@
       </div>
     </mat-card-content>
   </mat-card>
-
-  <div class="steps">
-    <mat-card class="step-card">
-      <mat-card-content>
-        <div class="step-row">
-          <mat-icon>looks_one</mat-icon>
-          <div>
-            <div class="step-title">Đăng ký ảnh cho sinh viên</div>
-            <div class="step-desc">Chọn MSSV và tải 1 ảnh rõ mặt.</div>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="step-card">
-      <mat-card-content>
-        <div class="step-row">
-          <mat-icon>looks_two</mat-icon>
-          <div>
-            <div class="step-title">Bật camera và nhận diện</div>
-            <div class="step-desc">Hệ thống tự nhận diện và ghi điểm danh.</div>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="step-card">
-      <mat-card-content>
-        <div class="step-row">
-          <mat-icon>looks_3</mat-icon>
-          <div>
-            <div class="step-title">Tra cứu báo cáo</div>
-            <div class="step-desc">Xem danh sách đã điểm danh theo ngày.</div>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-  </div>
-
   <div class="grid">
     <mat-card class="feature-card" *ngFor="let it of items" (click)="go(it.route)">
       <mat-card-content class="feature-content">

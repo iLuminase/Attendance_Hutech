@@ -4,33 +4,47 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import text
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session as DBSession
 from typing import List, Optional
 from app.database import SessionLocal
 from models.session_model import Session as SessionModel
+from models.session_class_model import SessionClass
 from schemas.session_schema import SessionCreate, SessionResponse, SessionUpdate
 
 router = APIRouter(prefix="/sessions", tags=["Sessions"])
 
 
 def _ensure_session_classes_table(db: DBSession) -> None:
-    """Tạo table session_classes nếu chưa có (hỗ trợ 1 session nhiều lớp)."""
-    db.execute(
-        text(
-            """
-            CREATE TABLE IF NOT EXISTS session_classes (
-                session_id INT NOT NULL,
-                class_id VARCHAR(20) NOT NULL,
-                PRIMARY KEY (session_id, class_id),
-                CONSTRAINT fk_sc_session FOREIGN KEY (session_id)
-                    REFERENCES sessions(session_id) ON DELETE CASCADE,
-                CONSTRAINT fk_sc_class FOREIGN KEY (class_id)
-                    REFERENCES classes(class_id) ON DELETE CASCADE
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-            """
+    """Tạo table session_classes nếu chưa có (hỗ trợ 1 session nhiều lớp).
+
+    Lưu ý: Không tự set charset/collation ở đây để tránh lệch so với bảng tham chiếu,
+    vì MySQL yêu cầu 2 cột FK (string) phải cùng collation/charset.
+    """
+    try:
+        # Tạo theo metadata của SQLAlchemy (thường sẽ dùng default của DB)
+        SessionClass.__table__.create(bind=db.get_bind(), checkfirst=True)
+    except OperationalError as exc:
+        # Nếu FK vẫn bị lỗi do schema cũ (engine/collation), fallback tạo bảng không FK
+        db.rollback()
+        msg = str(getattr(exc, "orig", exc))
+        if "errno: 150" not in msg and "Foreign key constraint" not in msg:
+            raise
+
+        db.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS session_classes (
+                    session_id INT NOT NULL,
+                    class_id VARCHAR(20) NOT NULL,
+                    PRIMARY KEY (session_id, class_id),
+                    INDEX idx_sc_session (session_id),
+                    INDEX idx_sc_class (class_id)
+                ) ENGINE=InnoDB
+                """
+            )
         )
-    )
-    db.commit()
+        db.commit()
 
 
 def _normalize_class_ids(class_id: Optional[str], class_ids: Optional[List[str]]) -> List[str]:

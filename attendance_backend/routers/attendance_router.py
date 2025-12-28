@@ -5,11 +5,13 @@ from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy import text
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
 from models.student import Student
 from models.session_model import Session as SessionModel
 from models.class_model import Class as ClassModel
+from models.session_class_model import SessionClass
 from schemas.attendance_schema import (
     AttendanceCheckinByFaceResponse,
     AttendanceRecordResponse,
@@ -91,23 +93,33 @@ def _ensure_attendance_table(db: Session) -> None:
 
 
 def _ensure_session_classes_table(db: Session) -> None:
-    """Tạo table session_classes nếu chưa có (hỗ trợ 1 session nhiều lớp)."""
-    db.execute(
-        text(
-            """
-            CREATE TABLE IF NOT EXISTS session_classes (
-                session_id INT NOT NULL,
-                class_id VARCHAR(20) NOT NULL,
-                PRIMARY KEY (session_id, class_id),
-                CONSTRAINT fk_sc_session FOREIGN KEY (session_id)
-                    REFERENCES sessions(session_id) ON DELETE CASCADE,
-                CONSTRAINT fk_sc_class FOREIGN KEY (class_id)
-                    REFERENCES classes(class_id) ON DELETE CASCADE
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-            """
+    """Tạo table session_classes nếu chưa có (hỗ trợ 1 session nhiều lớp).
+
+    Tránh tự set charset/collation để không lệch với bảng tham chiếu.
+    Nếu schema cũ làm FK lỗi (errno 150) thì fallback tạo bảng không FK.
+    """
+    try:
+        SessionClass.__table__.create(bind=db.get_bind(), checkfirst=True)
+    except OperationalError as exc:
+        db.rollback()
+        msg = str(getattr(exc, "orig", exc))
+        if "errno: 150" not in msg and "Foreign key constraint" not in msg:
+            raise
+
+        db.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS session_classes (
+                    session_id INT NOT NULL,
+                    class_id VARCHAR(20) NOT NULL,
+                    PRIMARY KEY (session_id, class_id),
+                    INDEX idx_sc_session (session_id),
+                    INDEX idx_sc_class (class_id)
+                ) ENGINE=InnoDB
+                """
+            )
         )
-    )
-    db.commit()
+        db.commit()
 
 
 def _get_session_class_ids(db: Session, session_id: int) -> List[str]:
